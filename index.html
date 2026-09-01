@@ -115,7 +115,8 @@ Avoided: all-caps eyebrow labels, appended arrows on links, soft-shadow cards, g
 
   @media (max-width:760px){
     .project, .project.reverse{ grid-template-columns:1fr; }
-    .project.reverse .figs, .project.reverse .copy{ order:initial; }
+    .project .copy, .project.reverse .copy{ order:1; }
+    .project .figs, .project.reverse .figs{ order:2; }
   }
 
   .support-row{
