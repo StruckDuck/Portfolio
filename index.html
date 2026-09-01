@@ -1,90 +1,304 @@
+<!--
+DESIGN PLAN
+Subject: a maker/designer's portfolio for a metal-fabrication CNC/signage job — audience is a
+technical hiring manager, not a magic-show audience. Content is genuinely his: printer's-mark-
+inspired lettering, engraved-style badges, and functional 3D-printed mechanisms.
+
+Color: avoiding the cream+terracotta AI-default. Base is a near-white cool paper (#FAFAF8), ink
+text (#1E201C, not a rounded #111), and a single accent drawn from oxidized metal/patina rather
+than warm terracotta: #3F6E5B (patina copper-green). Used sparingly — links, rules, markers.
+Type: Fraunces (display, has ink-trap serif details that echo engraving/letterpress) paired with
+IBM Plex Sans (body — has a technical/drafting feel appropriate to CAD content).
+Layout: hero uses his own JS mark as the primary visual since that mark IS the most characteristic
+thing in his world. Below, an alternating editorial layout — image and text swap sides per
+project — rather than a repeated card grid. A single thick rule divides the branding section from
+the fabrication section, since the content really does split into two sequential bodies of work.
+Avoided: all-caps eyebrow labels, appended arrows on links, soft-shadow cards, gradient washes.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Joshua Stacy — Design & Fabrication Portfolio</title>
+<title>Joshua Stacy — Design &amp; Fabrication Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --ink: #1a1a1a;
-    --gray: #555;
-    --rule: #ddd;
-    --bg: #fafafa;
+  :root{
+    --paper:#FAFAF8;
+    --ink:#1E201C;
+    --ink-soft:#55564F;
+    --rule:#DEDBD1;
+    --accent:#3F6E5B;
+    --max:920px;
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
   }
-  header {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 48px 24px 24px;
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    margin:0;
+    letter-spacing:-0.01em;
   }
-  h1 {
-    font-size: 1.8rem;
-    margin: 0 0 4px;
-    font-weight: 700;
+  a{ color:var(--accent); }
+  .wrap{ max-width:var(--max); margin:0 auto; padding:0 28px; }
+
+  nav{
+    position:sticky; top:0; z-index:10;
+    background:rgba(250,250,248,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--rule);
   }
-  .subtitle {
-    color: var(--gray);
-    font-size: 1.05rem;
-    margin: 0 0 20px;
+  nav .wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 28px;
   }
-  .actions {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 8px;
+  nav .name{ font-family:'Fraunces', serif; font-weight:600; font-size:1.05rem; }
+  nav .links{ display:flex; gap:22px; font-size:0.88rem; }
+  nav .links a{ color:var(--ink-soft); text-decoration:none; }
+  nav .links a:hover{ color:var(--accent); }
+  @media (max-width:640px){ nav .links{ display:none; } }
+
+  .hero{ padding:64px 0 40px; }
+  .hero-grid{
+    display:grid; grid-template-columns:220px 1fr; gap:40px; align-items:center;
   }
-  a.button {
-    display: inline-block;
-    padding: 10px 18px;
-    background: var(--ink);
-    color: #fff;
-    text-decoration: none;
-    border-radius: 4px;
-    font-size: 0.95rem;
+  .hero-mark{ width:100%; height:auto; }
+  .hero h1{ font-size:2.5rem; margin-bottom:6px; }
+  .hero .role{ color:var(--ink-soft); font-size:1.15rem; margin-bottom:18px; }
+  .hero p{ max-width:60ch; }
+  @media (max-width:640px){
+    .hero-grid{ grid-template-columns:1fr; text-align:left; }
+    .hero-mark{ width:120px; }
   }
-  a.button.secondary {
-    background: transparent;
-    color: var(--ink);
-    border: 1px solid var(--rule);
+
+  .divider{
+    border:none; border-top:2px solid var(--ink); margin:56px 0 6px;
   }
-  .viewer-wrap {
-    max-width: 900px;
-    margin: 0 auto 48px;
-    padding: 0 24px;
+  .section-label{
+    display:flex; align-items:baseline; gap:14px; margin:0 0 40px;
   }
-  .viewer {
-    width: 100%;
-    height: 85vh;
-    border: 1px solid var(--rule);
-    border-radius: 6px;
+  .section-label h2{ font-size:1.5rem; }
+  .section-label .count{ color:var(--ink-soft); font-size:0.9rem; }
+
+  .project{
+    display:grid; grid-template-columns:1fr 1fr; gap:44px; align-items:start;
+    padding:44px 0; border-bottom:1px solid var(--rule);
   }
-  footer {
-    text-align: center;
-    color: var(--gray);
-    font-size: 0.85rem;
-    padding: 24px;
+  .project:last-child{ border-bottom:none; }
+  .project.reverse .figs{ order:2; }
+  .project.reverse .copy{ order:1; }
+  .project h3{ font-size:1.3rem; margin-bottom:2px; }
+  .project .kind{ color:var(--accent); font-size:0.85rem; font-weight:600; margin-bottom:14px; display:block; }
+  .project p{ color:var(--ink); font-size:0.97rem; margin:0 0 16px; }
+  .figs{ display:flex; flex-direction:column; gap:12px; }
+  .figs img{ max-width:100%; max-height:440px; width:auto; height:auto; display:block; margin:0 auto; border-radius:2px; }
+  .fig-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; }
+  .fig-row img{ max-height:300px; }
+  .caption{ font-size:0.78rem; color:var(--ink-soft); font-style:italic; margin-top:4px; }
+  .listing-link{
+    display:inline-block; margin-top:4px; font-size:0.92rem; font-weight:600;
+    color:var(--accent); text-decoration:none; border-bottom:1px solid var(--accent);
+    padding-bottom:1px;
   }
+  .listing-link:hover{ opacity:0.75; }
+  .listing-row{ display:flex; gap:22px; flex-wrap:wrap; margin-top:6px; }
+
+  @media (max-width:760px){
+    .project, .project.reverse{ grid-template-columns:1fr; }
+    .project.reverse .figs, .project.reverse .copy{ order:initial; }
+  }
+
+  .section-intro{ padding:8px 0 8px; max-width:65ch; }
+  .section-intro p{ color:var(--ink); }
+
+  .trio{ display:grid; gap:36px; }
+  .trio-item{
+    display:grid; grid-template-columns:110px 1fr 1fr auto; gap:20px; align-items:center;
+    padding:20px 0; border-bottom:1px solid var(--rule);
+  }
+  .trio-item:last-child{ border-bottom:none; }
+  .trio-item h4{ font-family:'Fraunces', serif; font-weight:600; font-size:1.05rem; }
+  .trio-item img{ width:100%; border-radius:2px; }
+  @media (max-width:700px){
+    .trio-item{ grid-template-columns:1fr 1fr; }
+    .trio-item h4{ grid-column:1 / -1; }
+  }
+
+  footer{
+    margin-top:64px; padding:44px 0 60px; border-top:2px solid var(--ink);
+  }
+  footer h2{ font-size:1.6rem; margin-bottom:10px; }
+  footer p{ max-width:55ch; color:var(--ink-soft); }
+  .contact{ margin-top:22px; font-size:0.98rem; }
+  .contact div{ margin-bottom:4px; }
 </style>
 </head>
 <body>
-  <header>
-    <h1>Joshua Stacy</h1>
-    <p class="subtitle">Graphic Design, Illustration &amp; Fabrication Portfolio</p>
-    <div class="actions">
-      <a class="button" href="portfolio.pdf" download>Download PDF</a>
-      <a class="button secondary" href="portfolio.pdf" target="_blank" rel="noopener">Open in New Tab</a>
+
+<nav>
+  <div class="wrap">
+    <span class="name">Joshua Stacy</span>
+    <div class="links">
+      <a href="#branding">Branding &amp; Logos</a>
+      <a href="#fabrication">3D &amp; Fabrication</a>
+      <a href="#contact">Contact</a>
     </div>
-  </header>
-  <div class="viewer-wrap">
-    <iframe class="viewer" src="portfolio.pdf" title="Joshua Stacy Portfolio"></iframe>
   </div>
-  <footer>
-    joshuarstacy@gmail.com &nbsp;·&nbsp; (479) 510-3304
+</nav>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div class="hero-grid">
+      <img class="hero-mark" src="assets/JS.jpg" alt="Joshua Stacy Up Close monogram mark">
+      <div>
+        <h1>Joshua Stacy</h1>
+        <p class="role">Graphic Design, Illustration &amp; Fabrication</p>
+        <p>My name is Joshua Stacy and I am a graphic designer, illustrator, and maker in Northwest Arkansas. I am also a professional close-up magician and have been performing for over 2 decades. That background shapes how I approach design: building props and mechanisms by hand for years means solving problems where an idea only counts if the physical object actually executes it, the same standard that applies to a logo, a CAD model, or a cut sign. Below is brand identity and logo work, showing the design process from concept to final mark, along with 3D modeling and fabrication projects that carry that same standard through to a manufactured, working object.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" id="branding">
+  <div class="section-label"><h2>Brand Identity &amp; Logo Design</h2><span class="count">01</span></div>
+
+  <div class="project">
+    <div class="figs">
+      <img src="assets/JS.jpg" alt="Final JS monogram mark">
+      <div class="caption">Final mark</div>
+      <img src="assets/Condensed.jpg" alt="Monogram iteration sketches">
+      <div class="caption">Development</div>
+    </div>
+    <div class="copy">
+      <span class="kind">Monogram / Wordmark</span>
+      <h3>Joshua Stacy Up Close</h3>
+      <p>As a close-up magician, I wanted a mark that rejected the traditional iconography of the craft: no top hats, wands, or rabbits. Drawing on printer's and maker's marks instead of stage magic tropes, I built a combined JS mark that speaks to the hands-on, self-made nature of the work, since I build most of my own props and routines myself.</p>
+    </div>
+  </div>
+
+  <div class="project reverse">
+    <div class="figs">
+      <div class="fig-row">
+        <img src="assets/Sketch.jpg" alt="Grimtree owl concept sketch">
+        <img src="assets/Great_Horned_Owl_-_Embroidered_Badge_w_White_Bkgrd.jpg" alt="Finished Grimtree badge">
+      </div>
+      <img src="assets/Proof_Mock-Up.jpg" alt="Grimtree badge on a cap mockup">
+      <div class="caption">Concept sketch, finished badge, and cap application</div>
+    </div>
+    <div class="copy">
+      <span class="kind">Mascot / Emblem Design</span>
+      <h3>Grimtree Wildlife Co.</h3>
+      <p>I designed this as a fictional apparel brand to work in a different visual space than typical outdoor brands like Mossy Oak or Realtree, which lean heavily on camo, deer, and antler imagery. I chose a great horned owl instead, a graceful, silent, and ancient bird of prey, and built the badge as clean embroidered artwork rather than a photography-driven mark, then mocked it up on an actual cap to test how it read as a produced good.</p>
+    </div>
+  </div>
+
+  <div class="project">
+    <div class="figs">
+      <img src="assets/Drawing_iteration.jpg" alt="USKS octopus badge iteration grid">
+      <div class="caption">Iteration, from initial sketch to final drawing</div>
+      <div class="fig-row">
+        <img src="assets/USKS_-_flat_on_white.jpg" alt="Finished USKS badge, flat color">
+        <img src="assets/Mock-up_cover.jpg" alt="USKS badge on a cap mockup">
+      </div>
+    </div>
+    <div class="copy">
+      <span class="kind">Emblem Design</span>
+      <h3>United States Kraken Society</h3>
+      <p>The United States Kraken Society is a fictional citizen-science organization I invented for marine biology and sailing enthusiasts. Rather than illustrate the octopus mascot straightforwardly, I noticed a ship's wheel has eight spokes and an octopus has eight tentacles, the same form in two guises, and built the mark from that overlap rather than from decoration.</p>
+    </div>
+  </div>
+
+  <hr class="divider" id="fabrication">
+  <div class="section-label"><h2>3D Modeling &amp; Fabrication</h2><span class="count">02</span></div>
+  <div class="section-intro">
+    <p>The pieces above cover branding and logo design. What follows shifts to 3D modeling and fabrication: translating a concept into a physical object that has to hold up under production, not just look right on screen. Each piece went through multiple rounds of printing and testing, adjusting geometry, tolerances, and print orientation, before I settled on a final version.</p>
+  </div>
+
+  <div class="project">
+    <div class="figs">
+      <img src="assets/Holding.png" alt="Penrose triangle held up to the camera">
+      <div class="caption">Held to camera, the angle the illusion is designed for</div>
+      <div class="fig-row">
+        <img src="assets/Angle_01.png" alt="Penrose triangle off angle">
+        <img src="assets/Angle_03.png" alt="Penrose triangle showing actual construction">
+      </div>
+    </div>
+    <div class="copy">
+      <span class="kind">3D Modeling &amp; Printing</span>
+      <h3>Penrose Triangle</h3>
+      <p>This is a 3D-printed Penrose Triangle, the classic impossible object. The illusion only resolves from one specific viewing angle, so I modeled, printed, and finished it to hold up under a camera lens rather than just on screen. It prints without supports at a 0.2mm layer height, and I hand-sanded the surface in one direction to fake a wood grain finish over a wood-PLA filament blend.</p>
+      <a class="listing-link" href="https://cults3d.com/en/3d-model/art/penrose-triangle-impossible-object-optical-illusion-struckduck" target="_blank" rel="noopener">View the STL &amp; print settings</a>
+    </div>
+  </div>
+
+  <div class="project reverse">
+    <div class="figs">
+      <div class="fig-row">
+        <img src="assets/1788235801334_image.png" alt="Impossible slide CAD render">
+        <img src="assets/1788235813475_image.png" alt="Impossible slide printed, illusion in effect">
+      </div>
+      <div class="caption">CAD model, and the printed piece with the illusion in effect</div>
+    </div>
+    <div class="copy">
+      <span class="kind">3D Modeling &amp; Printing</span>
+      <h3>Impossible Slide</h3>
+      <p>This is a 3D-printed interactive illusion where a ball appears to roll uphill on a playground slide when viewed from the correct angle. Modeled in DesignSpark Mechanical, the hardest part was tuning the curve so it would print cleanly while still reading as convincing from the illusion's specific viewing angle, balancing what the geometry needed to look right against what it needed to actually print without failing.</p>
+      <div class="listing-row">
+        <a class="listing-link" href="https://cults3d.com/en/3d-model/art/impossible-up-slide-interactive-optical-illusion" target="_blank" rel="noopener">View the STL &amp; print settings</a>
+        <a class="listing-link" href="https://youtube.com/shorts/b5zvuJ1c8X4" target="_blank" rel="noopener">Watch the demonstration</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="project">
+    <div class="copy" style="grid-column:1 / -1;">
+      <span class="kind">3D Modeling &amp; Printing</span>
+      <h3>Magic Trick Mechanisms</h3>
+      <p>These three magic tricks share the same core challenge: mechanisms that have to work reliably by feel while also reading clean enough to hand to a spectator. The Coin Thru Bolt and the Ball Escape box are both print-in-place designs, meaning the moving parts are modeled with clearances tight enough to print connected and functional straight off the bed. The Christmas Cube's challenge was different: getting the negative-space image cutouts on each face to read clearly, the same problem you'd solve cutting a panel from sheet metal.</p>
+    </div>
+  </div>
+
+  <div class="trio" style="margin-top:-16px;">
+    <div class="trio-item">
+      <h4>Coin Thru Bolt</h4>
+      <img src="assets/1788236140020_image.png" alt="Coin thru bolt product photo">
+      <img src="assets/Coin_thru_bolt_full.jpg" alt="Coin thru bolt CAD model">
+      <a class="listing-link" href="https://cults3d.com/en/3d-model/game/pip-magic-trick-coin-thru-bolt" target="_blank" rel="noopener">View listing</a>
+    </div>
+    <div class="trio-item">
+      <h4>Ball Escape</h4>
+      <img src="assets/1788236208584_image.png" alt="Ball escape product photo">
+      <img src="assets/Small_Ball_Escape_02.jpg" alt="Ball escape CAD model">
+      <a class="listing-link" href="https://cults3d.com/en/3d-model/game/ball-escape-magic-trick" target="_blank" rel="noopener">View listing</a>
+    </div>
+    <div class="trio-item">
+      <h4>Christmas Cube</h4>
+      <img src="assets/1788236343288_image.png" alt="Christmas cube product photo">
+      <img src="assets/Christmas_Cube_Panels.png" alt="Christmas cube CAD panels">
+      <a class="listing-link" href="https://cults3d.com/en/3d-model/game/christmas-magic-trick" target="_blank" rel="noopener">View listing</a>
+    </div>
+  </div>
+
+  <footer id="contact">
+    <h2>Thank you</h2>
+    <p>Thank you for reviewing this portfolio. I'd welcome the chance to talk through any of these pieces in more detail, and to discuss how the design, CAD, and production experience shown here could fit L&amp;L Metal Fabrication's work.</p>
+    <div class="contact">
+      <div><strong>Joshua Stacy</strong></div>
+      <div><a href="mailto:joshuarstacy@gmail.com">joshuarstacy@gmail.com</a></div>
+      <div>(479) 510-3304</div>
+    </div>
   </footer>
+
+</div>
 </body>
 </html>
