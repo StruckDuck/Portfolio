@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visits — Joshua Stacy Portfolio</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAFAF8; --ink:#1E201C; --ink-soft:#55564F;
+    --rule:#DEDBD1; --accent:#3F6E5B;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif; line-height:1.5;
+  }
+  h1{ font-family:'Fraunces', serif; font-weight:700; }
+  .wrap{ max-width:1100px; margin:0 auto; padding:40px 24px; }
+  header{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
+  header h1{ font-size:1.6rem; margin:0; }
+  .meta{ color:var(--ink-soft); font-size:0.9rem; }
+
+  #signin-view{ text-align:center; padding:80px 20px; }
+  #signin-view p{ color:var(--ink-soft); max-width:40ch; margin:0 auto 24px; }
+  button{
+    font-family:'IBM Plex Sans', sans-serif; font-size:0.95rem; font-weight:500;
+    padding:11px 20px; border-radius:5px; border:1px solid var(--ink);
+    background:var(--ink); color:var(--paper); cursor:pointer;
+  }
+  button.secondary{ background:transparent; color:var(--ink); }
+  button:hover{ opacity:0.85; }
+
+  #app-view{ display:none; }
+  .toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; flex-wrap:wrap; }
+  .stat{ font-size:0.95rem; color:var(--ink-soft); }
+  .stat strong{ color:var(--ink); font-size:1.3rem; font-family:'Fraunces', serif; }
+
+  table{ width:100%; border-collapse:collapse; font-size:0.88rem; }
+  th, td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--rule); vertical-align:top; }
+  th{ color:var(--ink-soft); font-weight:600; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.02em; }
+  tr:hover td{ background:rgba(63,110,95,0.05); }
+  .ua{ max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--ink-soft); font-size:0.82rem; }
+  .empty{ text-align:center; padding:60px 20px; color:var(--ink-soft); }
+  .error{ color:#a33; margin-top:14px; font-size:0.9rem; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div id="signin-view">
+    <h1>Portfolio Visits</h1>
+    <p>Sign in with the Google account authorized to view this data.</p>
+    <button id="signin-btn">Sign in with Google</button>
+    <div class="error" id="signin-error"></div>
+  </div>
+
+  <div id="app-view">
+    <header>
+      <h1>Portfolio Visits</h1>
+      <button class="secondary" id="signout-btn">Sign out</button>
+    </header>
+    <div class="toolbar">
+      <div class="stat"><strong id="count">—</strong> total visits</div>
+      <button class="secondary" id="refresh-btn">Refresh</button>
+    </div>
+    <div id="table-wrap">
+      <table id="visits-table">
+        <thead>
+          <tr>
+            <th>Date &amp; Time</th>
+            <th>City</th>
+            <th>Region</th>
+            <th>Country</th>
+            <th>Page</th>
+            <th>Referrer</th>
+            <th>Browser / OS</th>
+          </tr>
+        </thead>
+        <tbody id="visits-body"></tbody>
+      </table>
+      <div class="empty" id="empty-state" style="display:none;">No visits logged yet.</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    getFirestore, collection, query, orderBy, getDocs
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAKWEE1hTCYi2OJIu728l3OTW4f8WKbmOY",
+    authDomain: "portfolio-fbb02.firebaseapp.com",
+    projectId: "portfolio-fbb02",
+    storageBucket: "portfolio-fbb02.firebasestorage.app",
+    messagingSenderId: "261396568216",
+    appId: "1:261396568216:web:8ad49c7dee49d2567218ed"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  const signinView = document.getElementById("signin-view");
+  const appView = document.getElementById("app-view");
+  const signinBtn = document.getElementById("signin-btn");
+  const signoutBtn = document.getElementById("signout-btn");
+  const refreshBtn = document.getElementById("refresh-btn");
+  const signinError = document.getElementById("signin-error");
+  const visitsBody = document.getElementById("visits-body");
+  const emptyState = document.getElementById("empty-state");
+  const countEl = document.getElementById("count");
+
+  signinBtn.addEventListener("click", () => {
+    signinError.textContent = "";
+    signInWithPopup(auth, provider).catch((err) => {
+      signinError.textContent = "Sign-in failed: " + err.message;
+    });
+  });
+
+  signoutBtn.addEventListener("click", () => signOut(auth));
+  refreshBtn.addEventListener("click", loadVisits);
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      signinView.style.display = "none";
+      appView.style.display = "block";
+      loadVisits();
+    } else {
+      signinView.style.display = "block";
+      appView.style.display = "none";
+    }
+  });
+
+  function formatDate(ts) {
+    if (!ts || !ts.toDate) return "—";
+    const d = ts.toDate();
+    return d.toLocaleString(undefined, {
+      year: "numeric", month: "short", day: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+  }
+
+  async function loadVisits() {
+    visitsBody.innerHTML = "";
+    emptyState.style.display = "none";
+    try {
+      const q = query(collection(db, "visits"), orderBy("timestamp", "desc"));
+      const snap = await getDocs(q);
+      countEl.textContent = snap.size;
+      if (snap.empty) {
+        emptyState.style.display = "block";
+        return;
+      }
+      snap.forEach((doc) => {
+        const v = doc.data();
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${formatDate(v.timestamp)}</td>
+          <td>${v.city || "—"}</td>
+          <td>${v.region || "—"}</td>
+          <td>${v.country || "—"}</td>
+          <td>${v.path || "—"}</td>
+          <td>${v.referrer || "—"}</td>
+          <td class="ua" title="${(v.userAgent || "").replace(/"/g, "&quot;")}">${v.userAgent || "—"}</td>
+        `;
+        visitsBody.appendChild(tr);
+      });
+    } catch (err) {
+      emptyState.style.display = "block";
+      emptyState.textContent = "Couldn't load visits: " + err.message;
+    }
+  }
+</script>
+</body>
+</html>
