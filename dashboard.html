@@ -65,7 +65,10 @@
     </header>
     <div class="toolbar">
       <div class="stat"><strong id="count">—</strong> total visits</div>
-      <button class="secondary" id="refresh-btn">Refresh</button>
+      <div style="display:flex; gap:10px;">
+        <button class="secondary" id="refresh-btn">Refresh</button>
+        <button class="secondary" id="clear-btn" style="border-color:#a33; color:#a33;">Clear list</button>
+      </div>
     </div>
     <div id="table-wrap">
       <table id="visits-table">
@@ -93,7 +96,7 @@
     getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
   import {
-    getFirestore, collection, query, orderBy, getDocs
+    getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -115,6 +118,7 @@
   const signinBtn = document.getElementById("signin-btn");
   const signoutBtn = document.getElementById("signout-btn");
   const refreshBtn = document.getElementById("refresh-btn");
+  const clearBtn = document.getElementById("clear-btn");
   const signinError = document.getElementById("signin-error");
   const visitsBody = document.getElementById("visits-body");
   const emptyState = document.getElementById("empty-state");
@@ -129,6 +133,7 @@
 
   signoutBtn.addEventListener("click", () => signOut(auth));
   refreshBtn.addEventListener("click", loadVisits);
+  clearBtn.addEventListener("click", clearVisits);
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -178,6 +183,23 @@
     } catch (err) {
       emptyState.style.display = "block";
       emptyState.textContent = "Couldn't load visits: " + err.message;
+    }
+  }
+  async function clearVisits() {
+    const ok = window.confirm("Delete all logged visits? This can't be undone.");
+    if (!ok) return;
+    clearBtn.disabled = true;
+    clearBtn.textContent = "Clearing…";
+    try {
+      const snap = await getDocs(collection(db, "visits"));
+      await Promise.all(snap.docs.map((d) => deleteDoc(doc(db, "visits", d.id))));
+      await loadVisits();
+    } catch (err) {
+      emptyState.style.display = "block";
+      emptyState.textContent = "Couldn't clear visits: " + err.message;
+    } finally {
+      clearBtn.disabled = false;
+      clearBtn.textContent = "Clear list";
     }
   }
 </script>

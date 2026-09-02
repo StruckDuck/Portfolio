@@ -341,6 +341,20 @@ Avoided: all-caps eyebrow labels, appended arrows on links, soft-shadow cards, g
   <img src="" alt="">
 </div>
 
+<script>
+  // Runs immediately, before anything else loads. Visiting with ?owner=true
+  // permanently marks this browser as the site owner, so future visits from
+  // it are never logged. This is deliberately kept independent of Firebase —
+  // if the Firebase script below is slow, blocked, or fails to load, the
+  // owner flag still gets set every time.
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get("owner") === "true") {
+      localStorage.setItem("js_portfolio_owner", "true");
+    }
+  })();
+</script>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
@@ -357,13 +371,6 @@ Avoided: all-caps eyebrow labels, appended arrows on links, soft-shadow cards, g
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Visiting with ?owner=true permanently marks this browser as the site
-  // owner, so future visits from it are never logged (no IP needed, works
-  // even if the device's IP changes later).
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("owner") === "true") {
-    localStorage.setItem("js_portfolio_owner", "true");
-  }
   const isOwner = localStorage.getItem("js_portfolio_owner") === "true";
 
   if (!isOwner) {
